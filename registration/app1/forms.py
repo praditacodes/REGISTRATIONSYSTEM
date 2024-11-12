@@ -2,6 +2,7 @@ from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.core.exceptions import ValidationError
+from .models import Record
 
 class CustomUserCreationForm(UserCreationForm):
     email = forms.EmailField(required=True)
@@ -18,7 +19,7 @@ class CustomUserCreationForm(UserCreationForm):
             raise ValidationError("Your password must contain at least 8 characters.")
         if password.isdigit():
             raise ValidationError("Your password can't be entirely numeric.")
-        if password.lower() in ['password', '12345678', 'qwerty']:  # Add more common passwords as needed
+        if password.lower() in ['password', '12345678', 'qwerty']:  
             raise ValidationError("Your password can't be a commonly used password.")
 
         return password
@@ -33,7 +34,18 @@ class CustomUserCreationForm(UserCreationForm):
 
         return cleaned_data
 
+
 class CustomAuthenticationForm(AuthenticationForm):
     username = forms.CharField(label='Username', max_length=150)
     password = forms.CharField(label='Password', widget=forms.PasswordInput)
 
+
+class DashboardDataForm(forms.Form):
+    recent_activity = forms.CharField(widget=forms.Textarea, required=False)
+    status_info = forms.CharField(widget=forms.Textarea, required=False)
+    tasks_info = forms.CharField(widget=forms.Textarea, required=False)
+
+class RecordForm(forms.ModelForm):
+    class Meta:
+        model = Record
+        fields = ['serial_number', 'image', 'enum_status', 'pin', 'ai_status', 'comment', 'commit', 'status']
